@@ -16,12 +16,9 @@ import './db_helper.dart';
 
 List<Spend> spendsList = [];
 
-// TODO: add spends
 // TODO: read and write csv output
 // TODO: charts
 // TODO: read smses and update bank accounts
-// TODO: category basic list with icons
-// TODO:
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,6 +61,21 @@ class _SecondRouteState extends State<SecondRoute> {
     "Travel": Icons.card_travel,
     "Other": Icons.devices_other
   };
+
+  var colorList = {
+    "Bills": Colors.yellow,
+    "EMI": Colors.brown,
+    "Entertainment": Colors.red,
+    "Food & Drink": Colors.cyanAccent,
+    "Fuel": Colors.indigo,
+    "Groceries": Colors.green,
+    "Health": Colors.red,
+    "Investment": Colors.pink,
+    "Shopping": Colors.amber,
+    "Transfer": Colors.purple,
+    "Travel": Colors.deepOrange,
+    "Other": Colors.teal
+  };
   var selectedCategory = "";
   var selectedTags = <String>[];
   var tagList = [
@@ -76,17 +88,8 @@ class _SecondRouteState extends State<SecondRoute> {
     "friends"
   ];
 
-  Future addRecord() async {
+  Future addRecord(spend) async {
     var db = new DatabaseHelper();
-    var spend = new Spend(
-      bankAccount: dropDownValue,
-      reason: _spendReason,
-      amount: double.parse(_spendAmount),
-      isExpense: isExpense,
-      category: selectedCategory,
-      tags: selectedTags,
-      note: _spendNote,
-    );
     await db.saveSpend(spend);
   }
 
@@ -398,21 +401,19 @@ class _SecondRouteState extends State<SecondRoute> {
               print(isExpense);
               print(dropDownValue);
               print(_spendReason + _spendAmount + _spendNote);
-              spendsList.add(
-                new Spend(
-                  bankAccount: dropDownValue,
-                  reason: _spendReason,
-                  amount: double.parse(_spendAmount),
-                  isExpense: isExpense,
-                  category: selectedCategory,
-                  tags: selectedTags,
-                  note: _spendNote,
-//                    iconType:
-                ),
+              var spend = new Spend(
+                bankAccount: dropDownValue,
+                reason: _spendReason,
+                amount: double.parse(_spendAmount),
+                isExpense: isExpense,
+                category: selectedCategory,
+                tags: selectedTags,
+                note: _spendNote,
+                iconType: categoryList[selectedCategory],
+                iconColor: colorList[selectedCategory],
               );
-//              deleteTable();
-              await addRecord();
-//              deleteTable();
+              spendsList.add(spend);
+              await addRecord(spend);
               var resp = await getSpend();
               print(resp);
               Navigator.pop(context);

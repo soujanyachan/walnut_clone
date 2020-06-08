@@ -18,7 +18,9 @@ class SpendsDisplay extends StatefulWidget {
 // list of icons and mapped colours for the side widget
 
 class _SpendsDisplayState extends State<SpendsDisplay> {
-  List<List> sideWidgetData = [[Colors.pink, Icons.card_giftcard]];
+  List<List> sideWidgetData = [
+    [Colors.pink, Icons.card_giftcard]
+  ];
 
   displaySpends() {
     final List<Spend> entries = widget.spendList; // <String>['A', 'B', 'C'];
@@ -30,22 +32,21 @@ class _SpendsDisplayState extends State<SpendsDisplay> {
       return Row(
         children: <Widget>[
           Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: entries.map((x) {
                 return Container(
-                  margin: EdgeInsets.all(10.0),
+                  margin: EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.pink,
+                    color: x.iconColor,
                   ),
                   child: Icon(x.iconType),
                   height: 40,
                   width: 40,
                 );
-              }).toList()
-          ),
+              }).toList()),
           Container(
-            height: entries.length * 50.0,
+            height: entries.length * 50.0 + 20.0,
             width: 300.0,
             child: ListView.separated(
               physics: const NeverScrollableScrollPhysics(),
@@ -53,74 +54,45 @@ class _SpendsDisplayState extends State<SpendsDisplay> {
               itemCount: entries.length,
               itemBuilder: (BuildContext context, int index) {
                 return Container(
-                    height: 50,
+                    height: 40,
                     child: Row(
-                      mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text('${entries[index].reason}'),
-                            Text('${entries[index].amount.toString()}'),
-//                          Text('₹ 1692')
-                          ],
-                        ),
-                        Column(
-                          crossAxisAlignment:
-                          CrossAxisAlignment.end,
-                          children: <Widget>[
-                            Text(
-                              '${DateTime(now.year, now.month, now.day) ==
-                                  DateTime((entries[index].time).year,
-                                      (entries[index].time).month,
-                                      (entries[index].time).day)
-                                  || (DateTime(
-                                      now.year, now.month, now.day - 1) ==
-                                      DateTime((entries[index].time).year,
-                                          (entries[index].time).month,
-                                          (entries[index].time).day)) ?
-                              (DateTime(now.year, now.month, now.day) ==
-                                  DateTime(
-                                      (entries[index].time).year,
-                                      (entries[index].time).month,
-                                      (entries[index].time).day)
-                                  ? 'Today${formatter2
-                                  .format(entries[index].time)}'
-                                  : 'Yesterday${formatter2.format(
-                                  entries[index].time)}') :
-                              formatter.format(entries[index].time)}',
-                              style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.grey),
-                            ),
-                            Icon(Icons.account_balance_wallet,
-                                size: 12)
-                          ],
-                        ),
+                        Text('${entries[index].reason}'),
+                        Text('₹ ${entries[index].amount.toString()}'),
                       ],
-                    )
-                );
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Text(
+                          '${DateTime(now.year, now.month, now.day) == DateTime((entries[index].time).year, (entries[index].time).month, (entries[index].time).day) || (DateTime(now.year, now.month, now.day - 1) == DateTime((entries[index].time).year, (entries[index].time).month, (entries[index].time).day)) ? (DateTime(now.year, now.month, now.day) == DateTime((entries[index].time).year, (entries[index].time).month, (entries[index].time).day) ? 'Today${formatter2.format(entries[index].time)}' : 'Yesterday${formatter2.format(entries[index].time)}') : formatter.format(entries[index].time)}',
+                          style: TextStyle(fontSize: 11, color: Colors.grey),
+                        ),
+                        entries[index].isExpense ? Icon(Icons.account_balance_wallet, size: 12) : Container()
+                      ],
+                    ),
+                  ],
+                ));
               },
-              separatorBuilder:
-                  (BuildContext context, int index) =>
-              const Divider(),
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(),
             ),
           )
         ],
       );
     } else
-      return
-        Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Icon(Icons.ac_unit),
-                Text('No transactions added!'),
-              ],
-            )
-        );
+      return Container(
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          Icon(Icons.ac_unit),
+          Text('No transactions added!'),
+        ],
+      ));
   }
 
   @override
@@ -128,9 +100,7 @@ class _SpendsDisplayState extends State<SpendsDisplay> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        displaySpends()
-      ],
+      children: <Widget>[displaySpends()],
     );
   }
 }

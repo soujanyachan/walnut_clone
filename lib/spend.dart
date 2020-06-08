@@ -8,6 +8,7 @@ DateTime time;
 String category;
 bool isExpense;
 String note;
+Color iconColor;
 List<String> tags;
 String photo;
 IconData iconType;
@@ -20,6 +21,7 @@ Spend({
   this.category,
   this.isExpense,
   this.iconType,
+  this.iconColor,
   this.note,
   this.tags,
   this.photo
@@ -45,6 +47,7 @@ Map<String, dynamic> toMap() {
   map['note'] = note;
   map['tags'] = tags.toString();
   map['photo'] = photo;
+  map['iconColor'] = iconColor.toString();
   return map;
 }
 

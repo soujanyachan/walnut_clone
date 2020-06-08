@@ -29,7 +29,7 @@ class DatabaseHelper {
   void _onCreate(Database db, int version) async {
     // When creating the db, create the table
     await db.execute(
-        "CREATE TABLE Spend(id INTEGER PRIMARY KEY, amount REAL, bankAccount TEXT, reason TEXT, time TEXT, category TEXT, isExpense INTEGER, iconType TEXT, note TEXT, photo TEXT, tags TEXT)");
+        "CREATE TABLE Spend(id INTEGER PRIMARY KEY, amount REAL, bankAccount TEXT, reason TEXT, time TEXT, category TEXT, isExpense INTEGER, iconType TEXT, note TEXT, photo TEXT, tags TEXT, iconColor TEXT)");
   }
 
   Future<int> saveSpend(Spend spend) async {
