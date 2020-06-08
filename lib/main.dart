@@ -5,10 +5,16 @@ import 'package:intl/intl.dart';
 import './appbarwidget.dart';
 import './spendslist.dart';
 import './reminderslist.dart';
+import 'dart:convert';
 import './accountslist.dart';
 import './tagslist.dart';
 import './add_entry_dialog.dart';
 import 'package:quiver/iterables.dart';
+import 'package:image_picker/image_picker.dart';
+import './spend.dart';
+import './db_helper.dart';
+
+List<Spend> spendsList = [];
 
 // TODO: add spends
 // TODO: read and write csv output
@@ -17,12 +23,9 @@ import 'package:quiver/iterables.dart';
 // TODO: category basic list with icons
 // TODO:
 
-
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp
-  ]);
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(MyApp());
 }
 
@@ -37,7 +40,10 @@ class SecondRoute extends StatefulWidget {
 }
 
 class _SecondRouteState extends State<SecondRoute> {
+  final _formKey = GlobalKey<FormState>();
   var dropDownValue = "hi";
+  var _spendReason, _spendAmount, _spendNote;
+
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
   var newFormat = DateFormat("MMM dd, HH:mm a");
@@ -45,7 +51,7 @@ class _SecondRouteState extends State<SecondRoute> {
   var isExpense = false;
   var shouldDisplayTagList = false;
   var categoryList = {
-    "Bills":Icons.format_list_bulleted,
+    "Bills": Icons.format_list_bulleted,
     "EMI": Icons.graphic_eq,
     "Entertainment": Icons.stars,
     "Food & Drink": Icons.fastfood,
@@ -58,14 +64,45 @@ class _SecondRouteState extends State<SecondRoute> {
     "Travel": Icons.card_travel,
     "Other": Icons.devices_other
   };
+  var selectedCategory = "";
+  var selectedTags = <String>[];
+  var tagList = [
+    "family",
+    "online",
+    "learning",
+    "food",
+    "clothes",
+    "office",
+    "friends"
+  ];
 
-  var tagList = ["family", "online", "learning", "food", "clothes", "office", "friends"];
+  Future addRecord() async {
+    var db = new DatabaseHelper();
+    var spend = new Spend(
+      bankAccount: dropDownValue,
+      reason: _spendReason,
+      amount: double.parse(_spendAmount),
+      isExpense: isExpense,
+      category: selectedCategory,
+      tags: selectedTags,
+      note: _spendNote,
+    );
+    await db.saveSpend(spend);
+  }
+
+  void deleteTable() async {
+    var db = new DatabaseHelper();
+    db.dropSpendTable();
+  }
+
+  Future getSpend() async {
+    var db = new DatabaseHelper();
+    await db.getSpend();
+  }
 
   Future<Null> _selectTime(BuildContext context) async {
-    final picked = await showTimePicker(
-        context: context,
-      initialTime: selectedTime
-    );
+    final picked =
+        await showTimePicker(context: context, initialTime: selectedTime);
     setState(() {
       selectedTime = picked;
     });
@@ -89,45 +126,48 @@ class _SecondRouteState extends State<SecondRoute> {
     var quads = partition(categoryList.entries, 4).toList();
     var rowList = <Widget>[];
     var fullRowList = <Widget>[];
-    for (var i=0; i<quads.length; i++) {
+    for (var i = 0; i < quads.length; i++) {
       rowList = [];
-      for(var j=0;j<4; j++) {
+      for (var j = 0; j < 4; j++) {
         rowList.add(
-            SizedBox(
-              height: 75,
-              width: 75,
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft:
-                          Radius.circular(7.0),
-                          bottomLeft:
-                          Radius.circular(7.0)),
+          SizedBox(
+            height: 75,
+            width: 75,
+            child: Container(
+              child: Column(
+                children: <Widget>[
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedCategory = quads[i][j].key;
+                      });
+                    },
+                    child: Container(
+                      margin: EdgeInsets.all(7.0),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: selectedCategory == (quads[i][j].key)
+                            ? Colors.green
+                            : Colors.white,
                       ),
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.all(7.0),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.green,
-                        ),
-                        child: Icon(quads[i][j].value),
-                        height: 40,
-                        width: 40,
-                      ),
-                      Text(quads[i][j].key, overflow: TextOverflow.ellipsis,),
-                    ],
+                      child: Icon(quads[i][j].value),
+                      height: 40,
+                      width: 40,
+                    ),
                   ),
-                ),
+                  Text(
+                    quads[i][j].key,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
+          ),
         );
       }
-      fullRowList.add(
-        Row(
-          children: rowList,
-        )
-      );
+      fullRowList.add(Row(
+        children: rowList,
+      ));
     }
     return fullRowList;
   }
@@ -143,21 +183,29 @@ class _SecondRouteState extends State<SecondRoute> {
       for (var i = 0; i < triplets.length; i++) {
         rowList = [];
         for (var j = 0; j < 3; j++) {
+          var tagPressed = selectedTags.contains(triplets[i][j]);
           rowList.add(
             Container(
               height: 20,
+              color: tagPressed ? Colors.grey : Colors.white,
               child: FlatButton(
                 child: Text('#${triplets[i][j]}'),
-                onPressed: () {},
+                onPressed: () {
+                  setState(() {
+                    if (tagPressed) {
+                      selectedTags.remove(triplets[i][j]);
+                    } else {
+                      selectedTags.add(triplets[i][j]);
+                    }
+                  });
+                },
               ),
             ),
           );
         }
-        fullRowList.add(
-            Row(
-              children: rowList,
-            )
-        );
+        fullRowList.add(Row(
+          children: rowList,
+        ));
       }
     } catch (e) {
       return fullRowList;
@@ -179,11 +227,8 @@ class _SecondRouteState extends State<SecondRoute> {
               return DropdownMenuItem<String>(
                   value: value,
                   child: Row(
-                    children: [
-                      Text(value)
-                    ],
-                  )
-              );
+                    children: [Text(value)],
+                  ));
             }).toList(),
             onChanged: (value) {
               setState(() {
@@ -195,20 +240,29 @@ class _SecondRouteState extends State<SecondRoute> {
       ),
       ListTile(
         leading: Icon(Icons.brightness_3),
-        title: TextField(
+        title: TextFormField(
           decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: 'What was this spend for?'
-          ),
+              border: InputBorder.none, hintText: 'What was this spend for?'),
+          onSaved: (value) {
+            _spendReason = value;
+          },
         ),
       ),
       ListTile(
         leading: Icon(Icons.star),
-        title: TextField(
+        title: TextFormField(
+          keyboardType: TextInputType.number,
           decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: 'Enter amount'
-          ),
+              border: InputBorder.none, hintText: 'Enter amount'),
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Please enter amount';
+            }
+            return null;
+          },
+          onSaved: (value) {
+            _spendAmount = value;
+          },
         ),
       ),
       ListTile(
@@ -218,8 +272,12 @@ class _SecondRouteState extends State<SecondRoute> {
           onTap: () => _selectDate(context),
           decoration: InputDecoration(
             border: InputBorder.none,
-            hintText: newFormat.format(DateTime(selectedDate.year, selectedDate.month,
-                selectedDate.day, selectedTime.hour, selectedTime.minute)),
+            hintText: newFormat.format(DateTime(
+                selectedDate.year,
+                selectedDate.month,
+                selectedDate.day,
+                selectedTime.hour,
+                selectedTime.minute)),
           ),
         ),
       ),
@@ -246,7 +304,10 @@ class _SecondRouteState extends State<SecondRoute> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text('Expense'),
-                Text('Will be counted in total expenses', style: TextStyle(fontSize: 12),)
+                Text(
+                  'Will be counted in total expenses',
+                  style: TextStyle(fontSize: 12),
+                )
               ],
             ),
             Switch(
@@ -261,22 +322,24 @@ class _SecondRouteState extends State<SecondRoute> {
         ),
       ),
       ListTile(
-        leading: Icon(Icons.edit),
-        title: TextField(
-          decoration: InputDecoration(
-              border: InputBorder.none,
-            hintText: "Add a note"
-          ),
-        )
-      ),
-      ListTile(
           leading: Icon(Icons.edit),
-          title: Column(
-            children: <Widget>[
-              Text('Tag'),
-              ...displayTags(tagList, shouldDisplayTagList),
-            ],
-          ),
+          title: TextFormField(
+            decoration: InputDecoration(
+                border: InputBorder.none, hintText: "Add a note"),
+            onSaved: (value) {
+              _spendNote = value;
+            },
+          )),
+      ListTile(
+        leading: Icon(Icons.edit),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('Tag'),
+            ...displayTags(tagList, shouldDisplayTagList),
+          ],
+        ),
         onTap: () {
           setState(() {
             shouldDisplayTagList = true;
@@ -285,23 +348,82 @@ class _SecondRouteState extends State<SecondRoute> {
       ),
       ListTile(
           leading: Icon(Icons.edit),
-          title: Text('add a photo')
-      )
+          title: GestureDetector(
+              onTap: () {
+                print("trying to get image");
+              },
+              child: Text('add a photo')))
     ];
     return ListView.separated(
-        itemBuilder: (context, index) {
-          var listTileHeight = 50.0;
-          if (index == 4) listTileHeight = 200.0;
-          if (index == 7) listTileHeight = 70.0;
-          return Container(
-            height: listTileHeight,
-            child: inputSpendDataList[index]
-          );
-        },
-        separatorBuilder: (context, index) {
-          return Divider();
-        },
-        itemCount: inputSpendDataList.length,
+      itemBuilder: (context, index) {
+        var listTileHeight = 50.0;
+        if (index == 4) listTileHeight = 200.0;
+        if (index == 7) listTileHeight = 70.0;
+        return Container(
+            height: listTileHeight, child: inputSpendDataList[index]);
+      },
+      separatorBuilder: (context, index) {
+        return Divider();
+      },
+      itemCount: inputSpendDataList.length,
+    );
+  }
+
+  displaySaveButtons(context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        FlatButton(
+          onPressed: () {
+            if (_formKey.currentState.validate()) {
+              Scaffold.of(context)
+                  .showSnackBar(SnackBar(content: Text('Processing Data')));
+            }
+          },
+          child: Text(
+            'Save and add another'.toUpperCase(),
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+        FlatButton(
+          onPressed: () async {
+            if (_formKey.currentState.validate()) {
+              Scaffold.of(context)
+                  .showSnackBar(SnackBar(content: Text('Processing Data')));
+              _formKey.currentState.save();
+              print(selectedCategory +
+                  selectedTime.toString() +
+                  selectedDate.toString());
+              print(_formKey.currentState.toString());
+              print(isExpense);
+              print(dropDownValue);
+              print(_spendReason + _spendAmount + _spendNote);
+              spendsList.add(
+                new Spend(
+                  bankAccount: dropDownValue,
+                  reason: _spendReason,
+                  amount: double.parse(_spendAmount),
+                  isExpense: isExpense,
+                  category: selectedCategory,
+                  tags: selectedTags,
+                  note: _spendNote,
+//                    iconType:
+                ),
+              );
+//              deleteTable();
+              await addRecord();
+//              deleteTable();
+              var resp = await getSpend();
+              print(resp);
+              Navigator.pop(context);
+            }
+          },
+          child: Text(
+            'Save'.toUpperCase(),
+            style: TextStyle(color: Colors.blue),
+          ),
+        ),
+      ],
     );
   }
 
@@ -311,7 +433,7 @@ class _SecondRouteState extends State<SecondRoute> {
       appBar: AppBar(
         title: Text("Add a Spend"),
       ),
-      body: addSpendDialog(),
+      body: Form(key: _formKey, child: addSpendDialog()),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -321,29 +443,20 @@ class _SecondRouteState extends State<SecondRoute> {
             ),
           ],
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            FlatButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Save and add another'.toUpperCase(), style: TextStyle(color: Colors.blue),),
-            ),
-            FlatButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Save'.toUpperCase(), style: TextStyle(color: Colors.blue),),
-            ),
-          ],
+        child: Builder(
+          builder: (context) => displaySaveButtons(context),
         ),
       ),
     );
   }
 }
 
-class FirstRoute extends StatelessWidget {
+class FirstRoute extends StatefulWidget {
+  @override
+  _FirstRouteState createState() => _FirstRouteState();
+}
+
+class _FirstRouteState extends State<FirstRoute> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -354,7 +467,7 @@ class FirstRoute extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            SpendsList(),
+            SpendsList(spendList: spendsList,),
             RemindersList(),
             AccountsList(),
             TagsList()
@@ -388,7 +501,6 @@ class FirstRoute extends StatelessWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var spendsList = [];
   var remindersList = [];
 
   @override

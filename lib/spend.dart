@@ -1,34 +1,51 @@
 import 'package:flutter/cupertino.dart';
 
 class Spend {
-  // bank account
-// reason for expense
-// amount
-// time
-// category
-// is expense
-// note
-// tag
-// photo of receipt/warranty
 String bankAccount;
 String reason;
-String paidFrom;
-String paidTo;
 double amount;
 DateTime time;
 String category;
 bool isExpense;
 String note;
-String tag;
+List<String> tags;
 String photo;
-Widget iconType;
+IconData iconType;
 
-Spend(this.amount, this.bankAccount) {
-  this.time = DateTime.now();
+Spend({
+  @required this.amount,
+  this.bankAccount,
+  this.reason,
+  this.time,
+  this.category,
+  this.isExpense,
+  this.iconType,
+  this.note,
+  this.tags,
+  this.photo
+}) {
+  if(this.time == null) {
+    this.time = DateTime.now();
+  }
 }
 
 void driving() {
   print('${this.amount} ${this.bankAccount} ${this.time} is driving');
+}
+
+Map<String, dynamic> toMap() {
+  var map = new Map<String, dynamic>();
+  map['amount'] =  amount.toString();
+  map['bankAccount'] = bankAccount;
+  map['reason'] = reason;
+  map['time'] = time.toString();
+  map['category'] = category.toString();
+  map['isExpense'] = isExpense;
+  map['iconType'] = iconType.toString();
+  map['note'] = note;
+  map['tags'] = tags.toString();
+  map['photo'] = photo;
+  return map;
 }
 
 }

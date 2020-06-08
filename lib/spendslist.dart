@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:walnut_clone/main.dart';
 import './spenddisplay.dart';
+import './spend.dart';
 
 class SpendsList extends StatefulWidget {
+  final List<Spend> spendList;
+
+  SpendsList({@required this.spendList});
+
   @override
   _SpendsListState createState() => _SpendsListState();
 }
@@ -21,7 +27,7 @@ class _SpendsListState extends State<SpendsList> {
                 padding: const EdgeInsets.all(10.0),
                 child: Text('Spends'),
               ),
-              SpendsDisplay(),
+              SpendsDisplay(spendList: spendsList,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
