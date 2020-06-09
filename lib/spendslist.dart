@@ -24,10 +24,10 @@ class _SpendsListState extends State<SpendsList> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.all(10.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Text('Spends'),
               ),
-              SpendsDisplay(spendList: spendsList,),
+              SpendsDisplay(spendList: spendsList.length > 3 ? spendsList.sublist(0,3) : spendsList,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
