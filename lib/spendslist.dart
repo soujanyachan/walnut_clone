@@ -14,6 +14,7 @@ class SpendsList extends StatefulWidget {
 
 class _SpendsListState extends State<SpendsList> {
   @override
+
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
