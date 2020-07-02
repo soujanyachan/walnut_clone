@@ -16,7 +16,6 @@ class _SpendsListState extends State<SpendsList> {
   @override
 
   Widget build(BuildContext context) {
-    print(widget.spendList[0].toMap());
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Container(

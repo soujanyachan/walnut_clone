@@ -34,7 +34,9 @@ class DatabaseHelper {
 
   Future<int> saveSpend(Spend spend) async {
     var dbClient = await db;
-    int res = await dbClient.insert("Spend", spend.toMap());
+    int res = await dbClient.insert("Spend", spend.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    print("res.toString()");
+    print(res.toString());
     return res;
   }
 
@@ -49,7 +51,19 @@ class DatabaseHelper {
     List<Map> list = await dbClient.rawQuery('SELECT * FROM Spend');
     List<Spend> spends = new List();
     for (int i = 0; i < list.length; i++) {
-      var spend = new Spend(amount: list[i]["amount"]);
+      var spend = new Spend(
+          amount: list[i]["amount"],
+          bankAccount: list[i]["bankAccount"],
+          reason: list[i]["reason"],
+          time: list[i]["time"],
+          category: list[i]["category"],
+          isExpense: list[i]["isExpense"],
+          iconType: list[i]["iconType"],
+          iconColor: list[i]["iconType"],
+          note: list[i]["note"],
+          tags: list[i]["tags"],
+          photo: list[i]["photo"]
+      );
       spends.add(spend);
     }
 //    print("in get spend db helper");

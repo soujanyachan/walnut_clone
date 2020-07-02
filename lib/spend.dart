@@ -6,7 +6,7 @@ String reason;
 double amount;
 DateTime time;
 String category;
-bool isExpense;
+num isExpense;
 String note;
 Color iconColor;
 List<String> tags;
@@ -31,10 +31,6 @@ Spend({
   }
 }
 
-void driving() {
-  print('${this.amount} ${this.bankAccount} ${this.time} is driving');
-}
-
 Map<String, dynamic> toMap() {
   var map = new Map<String, dynamic>();
   map['amount'] =  amount.toString();
@@ -42,12 +38,13 @@ Map<String, dynamic> toMap() {
   map['reason'] = reason;
   map['time'] = time.toString();
   map['category'] = category.toString();
-  map['isExpense'] = isExpense;
+  map['isExpense'] = (isExpense == true ? 1 : 0);
   map['iconType'] = iconType.toString();
   map['note'] = note;
   map['tags'] = tags.toString();
   map['photo'] = photo;
   map['iconColor'] = iconColor.toString();
+  print(map);
   return map;
 }
 

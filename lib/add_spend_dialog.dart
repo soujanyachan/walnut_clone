@@ -381,7 +381,7 @@ class _SecondRouteState extends State<SecondRoute> {
                 bankAccount: dropDownValue,
                 reason: _spendReason,
                 amount: double.parse(_spendAmount),
-                isExpense: isExpense,
+                isExpense: isExpense == true ? 1 : 0,
                 category: selectedCategory,
                 tags: selectedTags,
                 note: _spendNote,

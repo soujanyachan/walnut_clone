@@ -55,6 +55,7 @@ class _FirstRouteState extends State<FirstRoute> {
     super.initState();
     getAllSpends().then((res) {
       print("got all spends from db");
+      print(spendsList);
       spendsList = spendsListDb + spendsList;
       print(spendsListDb.toString() + spendsList.toString());
     });
@@ -75,7 +76,7 @@ class _FirstRouteState extends State<FirstRoute> {
                 child: Column(
                   children: <Widget>[
                     SpendsList(
-                      spendList: spendsListDb != null ? spendsListDb : spendsList,
+                      spendList: spendsListDb != null ? spendsListDb : (spendsList.isNotEmpty ? spendsList : []),
                     ),
                     RemindersList(),
                     AccountsList(),
