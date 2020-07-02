@@ -74,7 +74,7 @@ class _SecondRouteState extends State<SecondRoute> {
     db.dropSpendTable();
   }
 
-  Future getSpend() async {
+  Future getAllSpends() async {
     var db = new DatabaseHelper();
     await db.getSpend();
   }
@@ -385,13 +385,12 @@ class _SecondRouteState extends State<SecondRoute> {
                 category: selectedCategory,
                 tags: selectedTags,
                 note: _spendNote,
+                time: DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedTime.hour, selectedTime.minute),
                 iconType: categoryList[selectedCategory],
                 iconColor: colorList[selectedCategory],
               );
               widget.spendList.insert(0, spend);
               await addRecord(spend);
-              var resp = await getSpend();
-              print(resp);
               Navigator.pop(context);
             }
           },

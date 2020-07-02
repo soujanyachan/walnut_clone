@@ -14,11 +14,13 @@ import './spend.dart';
 import './db_helper.dart';
 import './add_spend_dialog.dart';
 
-List<Spend> spendsList = [];
-
+// TODO: display old spends from db
 // TODO: read and write csv output
-// TODO: charts
-// TODO: read smses and update bank accounts
+// TODO: read smses
+//  TODO: update bank accounts
+// TODO: routes: all spends page, all reminders page,
+//  TODO: all accounts page, chart page, search page,
+// TODO: Profile page, set monthly budget page
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,46 +39,81 @@ class FirstRoute extends StatefulWidget {
 }
 
 class _FirstRouteState extends State<FirstRoute> {
+  List<Spend> spendsList = [];
+  var spendsListDb;
+  Future<String>getAllSpends() async {
+    var db = new DatabaseHelper();
+    var spends = await db.getSpend();
+    setState(() {
+      spendsListDb = spends;
+    });
+    return "done";
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getAllSpends().then((res) {
+      print("got all spends from db");
+      spendsList = spendsListDb + spendsList;
+      print(spendsListDb.toString() + spendsList.toString());
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(150.0),
-        child: AppBarWidget(),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            SpendsList(spendList: spendsList,),
-            RemindersList(),
-            AccountsList(),
-            TagsList()
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SecondRoute(spendList: spendsList)),
-          );
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      bottomNavigationBar: BottomAppBar(
-          elevation: 5,
-          child: Container(
-            decoration: BoxDecoration(
-                boxShadow: [BoxShadow(color: Colors.black26, blurRadius: 5)]),
-            height: 40.0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
+    return FutureBuilder<String>(
+        future: getAllSpends(),
+        builder: (context, AsyncSnapshot<String> snapshot) {
+          if (snapshot.hasData) {
+            return Scaffold(
+              appBar: PreferredSize(
+                preferredSize: Size.fromHeight(150.0),
+                child: AppBarWidget(),
               ),
-            ),
-          )),
-    );
+              body: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    SpendsList(
+                      spendList: spendsListDb != null ? spendsListDb : spendsList,
+                    ),
+                    RemindersList(),
+                    AccountsList(),
+                    TagsList()
+                  ],
+                ),
+              ),
+              floatingActionButton: FloatingActionButton(
+                child: Icon(Icons.add),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            SecondRoute(spendList: spendsList)),
+                  );
+                },
+              ),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.endDocked,
+              bottomNavigationBar: BottomAppBar(
+                  elevation: 5,
+                  child: Container(
+                    decoration: BoxDecoration(boxShadow: [
+                      BoxShadow(color: Colors.black26, blurRadius: 5)
+                    ]),
+                    height: 40.0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                      ),
+                    ),
+                  )),
+            );
+          } else {
+            return CircularProgressIndicator();
+          }
+        });
   }
 }
 

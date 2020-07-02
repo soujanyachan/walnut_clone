@@ -16,6 +16,7 @@ class _SpendsListState extends State<SpendsList> {
   @override
 
   Widget build(BuildContext context) {
+    print(widget.spendList[0].toMap());
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Container(
@@ -28,14 +29,19 @@ class _SpendsListState extends State<SpendsList> {
                 padding: const EdgeInsets.all(8.0),
                 child: Text('Spends'),
               ),
-              SpendsDisplay(spendList: spendsList.length > 3 ? spendsList.sublist(0,3) : spendsList,),
+              SpendsDisplay(spendList: widget.spendList.length > 3 ? widget.spendList.sublist(0,3) : widget.spendList,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Text('More Spends',
-                        style: TextStyle(color: Colors.blueAccent)),
+                    child: GestureDetector(
+                      onTap: () {
+                        print("more spends pressed");
+                      },
+                      child: Text('More Spends',
+                          style: TextStyle(color: Colors.blueAccent)),
+                    ),
                   )
                 ],
               )

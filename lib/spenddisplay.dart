@@ -116,7 +116,7 @@ class _SpendsDisplayState extends State<SpendsDisplay> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 Container(
-                  margin: EdgeInsets.all(8.0),
+//                  margin: EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: x.iconColor,
@@ -153,6 +153,12 @@ class _SpendsDisplayState extends State<SpendsDisplay> {
                     return GestureDetector(
                       onTap: () {
                         print("switch " + category);
+                        setState(() {
+                          x.category = category;
+                          x.iconType = categoryList[category];
+                          x.iconColor = colorList[category];
+                          // TODO: update in db
+                        });
                       },
                       child:
                       SizedBox(
@@ -197,17 +203,20 @@ class _SpendsDisplayState extends State<SpendsDisplay> {
                       ],
                     ),
                   ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      Text(
-                        '${DateTime(now.year, now.month, now.day) == DateTime((x.time).year, (x.time).month, (x.time).day) || (DateTime(now.year, now.month, now.day - 1) == DateTime((x.time).year, (x.time).month, (x.time).day)) ? (DateTime(now.year, now.month, now.day) == DateTime((x.time).year, (x.time).month, (x.time).day) ? 'Today${formatter2.format(x.time)}' : 'Yesterday${formatter2.format(x.time)}') : formatter.format(x.time)}',
-                        style: TextStyle(fontSize: 11, color: Colors.grey),
-                      ),
-                      x.isExpense
-                          ? Icon(Icons.account_balance_wallet, size: 12)
-                          : Container()
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Text(
+                          '${DateTime(now.year, now.month, now.day) == DateTime((x.time).year, (x.time).month, (x.time).day) || (DateTime(now.year, now.month, now.day - 1) == DateTime((x.time).year, (x.time).month, (x.time).day)) ? (DateTime(now.year, now.month, now.day) == DateTime((x.time).year, (x.time).month, (x.time).day) ? 'Today${formatter2.format(x.time)}' : 'Yesterday${formatter2.format(x.time)}') : formatter.format(x.time)}',
+                          style: TextStyle(fontSize: 11, color: Colors.grey),
+                        ),
+                        x.isExpense
+                            ? Icon(Icons.account_balance_wallet, size: 12)
+                            : Container()
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -229,7 +238,8 @@ class _SpendsDisplayState extends State<SpendsDisplay> {
         },
         defaultVerticalAlignment: TableCellVerticalAlignment.middle,
         children: [...spendListToTable()]);
-    print(widget.spendList);
+//    print("widget.spendList in spenddisplay");
+//    print(widget.spendList);
     return widget.spendList.length > 0
         ? Row(
             crossAxisAlignment: CrossAxisAlignment.start,

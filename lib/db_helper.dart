@@ -50,11 +50,10 @@ class DatabaseHelper {
     List<Spend> spends = new List();
     for (int i = 0; i < list.length; i++) {
       var spend = new Spend(amount: list[i]["amount"]);
-      print(list[i]["id"]);
-      print(list[i]["amount"]);
       spends.add(spend);
     }
-    print(spends.toString());
+//    print("in get spend db helper");
+//    print(spends.toString());
     return spends;
   }
 
