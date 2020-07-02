@@ -14,12 +14,9 @@ import './spend.dart';
 import './db_helper.dart';
 import './add_spend_dialog.dart';
 
-// TODO: display old spends from db
-// TODO: read and write csv output
-// TODO: read smses
-//  TODO: update bank accounts
 // TODO: routes: all spends page, all reminders page,
 //  TODO: all accounts page, chart page, search page,
+// TODO: detailed spend page
 // TODO: Profile page, set monthly budget page
 
 void main() {
@@ -128,3 +125,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
+
+// TODO: read and write csv output - NOT PRIORITY
+// TODO: read smses - NOT PRIORITY
+//  TODO: update bank accounts - NOPE
