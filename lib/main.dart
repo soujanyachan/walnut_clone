@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sms/sms.dart';
 import 'package:intl/intl.dart';
+import 'package:walnut_clone/all_spends_screen.dart';
+import 'package:walnut_clone/spend_detailed_screen.dart';
 import './appbarwidget.dart';
 import './spendslist.dart';
 import './reminderslist.dart';
@@ -14,10 +16,9 @@ import './spend.dart';
 import './db_helper.dart';
 import './add_spend_dialog.dart';
 
-// TODO: routes: all spends page, all reminders page,
+// TODO: routes: all reminders page,
 //  TODO: all accounts page, chart page, search page,
-// TODO: detailed spend page
-// TODO: Profile page, set monthly budget page
+// TODO: Profile page, set monthly budget overlay
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,7 +68,7 @@ class _FirstRouteState extends State<FirstRoute> {
             return Scaffold(
               appBar: PreferredSize(
                 preferredSize: Size.fromHeight(150.0),
-                child: AppBarWidget(),
+                child: AppBarWidget(spendsList),
               ),
               body: SingleChildScrollView(
                 child: Column(
@@ -122,6 +123,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: FirstRoute(),
+      routes: {
+        SpendDetailedScreen.routeName : (ctx) => SpendDetailedScreen(),
+        AllSpendsScreen.routeName : (ctx) => AllSpendsScreen(),
+      },
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:walnut_clone/all_spends_screen.dart';
 import 'package:walnut_clone/main.dart';
 import './spenddisplay.dart';
 import './spend.dart';
@@ -37,6 +38,7 @@ class _SpendsListState extends State<SpendsList> {
                     child: GestureDetector(
                       onTap: () {
                         print("more spends pressed");
+                        Navigator.of(context).pushNamed(AllSpendsScreen.routeName, arguments: widget.spendList);
                       },
                       child: Text('More Spends',
                           style: TextStyle(color: Colors.blueAccent)),

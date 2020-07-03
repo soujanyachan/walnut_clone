@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:walnut_clone/all_spends_screen.dart';
+import './spend.dart';
 
 class AppBarWidget extends StatelessWidget {
-  getAppBarWidget() {
+  final List<Spend> spendsList;
+
+  AppBarWidget(this.spendsList);
+
+  getAppBarWidget(BuildContext ctx) {
     initializeDateFormatting();
     DateTime now = new DateTime.now();
     var formatter = new DateFormat("MMMM", 'en');
@@ -79,7 +85,13 @@ class AppBarWidget extends StatelessWidget {
                       ),
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                        child: Icon(Icons.pie_chart),
+                        child: IconButton(
+                            icon: Icon(Icons.pie_chart),
+                            tooltip: 'Increase volume by 10',
+                            onPressed: () {
+                              Navigator.of(ctx).pushNamed(AllSpendsScreen.routeName, arguments: this.spendsList);
+                            },
+                          )
                       ),
                     ],
                   )
@@ -92,6 +104,6 @@ class AppBarWidget extends StatelessWidget {
   }
   @override
   Widget build(BuildContext context) {
-    return getAppBarWidget();
+    return getAppBarWidget(context);
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import './spend.dart';
+import './spend_detailed_screen.dart';
 
 class SpendsDisplay extends StatefulWidget {
   final List<Spend> spendList;
@@ -190,36 +191,43 @@ class _SpendsDisplayState extends State<SpendsDisplay> {
                   },
                 ),
               )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(
-                    height: 50,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text('${x.reason}'),
-                        Text('₹ ${f.format(x.amount)}'),
-                      ],
+            : GestureDetector(
+              onTap: () {
+                print("time to go to details psend");
+                Navigator.of(context).pushNamed(SpendDetailedScreen.routeName, arguments: x.toMap());
+              },
+              behavior: HitTestBehavior.translucent,
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Container(
+                      height: 50,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('${x.reason}'),
+                          Text('₹ ${f.format(x.amount)}'),
+                        ],
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        Text(
-                          '${DateTime(now.year, now.month, now.day) == DateTime((x.time).year, (x.time).month, (x.time).day) || (DateTime(now.year, now.month, now.day - 1) == DateTime((x.time).year, (x.time).month, (x.time).day)) ? (DateTime(now.year, now.month, now.day) == DateTime((x.time).year, (x.time).month, (x.time).day) ? 'Today${formatter2.format(x.time)}' : 'Yesterday${formatter2.format(x.time)}') : formatter.format(x.time)}',
-                          style: TextStyle(fontSize: 11, color: Colors.grey),
-                        ),
-                        x.isExpense !=null && x.isExpense == 1
-                            ? Icon(Icons.account_balance_wallet, size: 12)
-                            : Container()
-                      ],
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                          Text(
+                            '${DateTime(now.year, now.month, now.day) == DateTime((x.time).year, (x.time).month, (x.time).day) || (DateTime(now.year, now.month, now.day - 1) == DateTime((x.time).year, (x.time).month, (x.time).day)) ? (DateTime(now.year, now.month, now.day) == DateTime((x.time).year, (x.time).month, (x.time).day) ? 'Today${formatter2.format(x.time)}' : 'Yesterday${formatter2.format(x.time)}') : formatter.format(x.time)}',
+                            style: TextStyle(fontSize: 11, color: Colors.grey),
+                          ),
+                          x.isExpense !=null && x.isExpense == 1
+                              ? Icon(Icons.account_balance_wallet, size: 12)
+                              : Container()
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+            ),
       ]);
     }).toList();
   }
