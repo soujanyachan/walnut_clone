@@ -42,11 +42,11 @@ Map<String, dynamic> toMap() {
   map['category'] = category.toString();
   map['isExpense'] = (isExpense == true ? 1 : 0);
   map['iconType'] = iconType.toString();
-  map['note'] = note;
+  map['note'] = note != null ? note : '';
   map['tags'] = tags.toString();
-  map['photo'] = photo;
+  map['photo'] = photo != null ? photo : 'photo.jpg';
   map['iconColor'] = iconColor.toString();
-  map['id'] = id.toString();
+//  map['id'] = id.toString();
   print(map);
   return map;
 }
