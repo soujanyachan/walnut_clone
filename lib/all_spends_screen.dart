@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import './spenddisplay.dart';
 
 class AllSpendsScreen extends StatelessWidget {
   static const routeName = '/all-spends';
@@ -9,8 +10,17 @@ class AllSpendsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("View all Spends"),
       ),
-      body: Container(
-        child: Text('this is the all spends screen' + allSpendsList.toString()),
+      body: Card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text('Spends'),
+            ),
+            SpendsDisplay(spendList: allSpendsList),
+          ],
+        ),
       ),
     );
   }
