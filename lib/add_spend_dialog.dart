@@ -18,7 +18,9 @@ class _SecondRouteState extends State<SecondRoute> {
   var _spendReason, _spendAmount, _spendNote;
 
   DateTime selectedDate = DateTime.now();
+  final maxDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
+
   var newFormat = DateFormat("MMM dd, HH:mm a");
   var formatTime = DateFormat("HH:mm a");
   var isExpense = false;
@@ -79,24 +81,37 @@ class _SecondRouteState extends State<SecondRoute> {
     await db.getSpend();
   }
 
+  bool isNotFutureTime(TimeOfDay pickedTime) {
+    final maxTime = TimeOfDay.now();
+    if (pickedTime.hour <= maxTime.hour &&
+        pickedTime.minute <= maxTime.minute) {
+      return true;
+    }
+    return false;
+  }
+
   Future<Null> _selectTime(BuildContext context) async {
     final picked =
         await showTimePicker(context: context, initialTime: selectedTime);
     if (picked != null && picked != selectedTime) {
-      setState(() {
-        selectedTime = picked;
-      });
+      if (isNotFutureTime(picked)) {
+        setState(() {
+          selectedTime = picked;
+        });
+      } else {
+        selectedTime = TimeOfDay.now();
+        Scaffold.of(context)
+          ..removeCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(
+                'Time cannot be greater than current time (${selectedTime.format(context)})',
+                style: TextStyle(color: Colors.amber),
+              ),
+            ),
+          );
+      }
     }
-    Scaffold.of(context)
-      ..removeCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(
-            'Selected Date & Time: ${newFormat.format(DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedTime.hour, selectedTime.minute))}',
-            style: TextStyle(color: Colors.amber),
-          ),
-        ),
-      );
   }
 
   Future<Null> _selectDate(BuildContext context) async {
@@ -104,7 +119,7 @@ class _SecondRouteState extends State<SecondRoute> {
         context: context,
         initialDate: selectedDate,
         firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
+        lastDate: maxDate);
     if (picked != null) {
       await _selectTime(context);
       setState(() {
@@ -112,7 +127,6 @@ class _SecondRouteState extends State<SecondRoute> {
       });
     }
     Scaffold.of(context)
-      ..removeCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
           content: Text(
