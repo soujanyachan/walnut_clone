@@ -81,10 +81,22 @@ class _SecondRouteState extends State<SecondRoute> {
 
   Future<Null> _selectTime(BuildContext context) async {
     final picked =
-    await showTimePicker(context: context, initialTime: selectedTime);
-    setState(() {
-      selectedTime = picked;
-    });
+        await showTimePicker(context: context, initialTime: selectedTime);
+    if (picked != null && picked != selectedTime) {
+      setState(() {
+        selectedTime = picked;
+      });
+    }
+    Scaffold.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            'Selected Date & Time: ${newFormat.format(DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedTime.hour, selectedTime.minute))}',
+            style: TextStyle(color: Colors.amber),
+          ),
+        ),
+      );
   }
 
   Future<Null> _selectDate(BuildContext context) async {
@@ -93,12 +105,22 @@ class _SecondRouteState extends State<SecondRoute> {
         initialDate: selectedDate,
         firstDate: DateTime(2015, 8),
         lastDate: DateTime(2101));
-    if (picked != null && picked != selectedDate) {
+    if (picked != null) {
       await _selectTime(context);
       setState(() {
         selectedDate = picked;
       });
     }
+    Scaffold.of(context)
+      ..removeCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            'Selected Date & Time: ${newFormat.format(DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedTime.hour, selectedTime.minute))}',
+            style: TextStyle(color: Colors.amber),
+          ),
+        ),
+      );
   }
 
   displayCategories(categoryList) {
@@ -192,7 +214,7 @@ class _SecondRouteState extends State<SecondRoute> {
     return fullRowList;
   }
 
-  addSpendDialog() {
+  addSpendDialog(BuildContext context) {
     var inputSpendDataList = <Widget>[
       ListTile(
         dense: true,
@@ -385,7 +407,8 @@ class _SecondRouteState extends State<SecondRoute> {
                 category: selectedCategory,
                 tags: selectedTags,
                 note: _spendNote,
-                time: DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedTime.hour, selectedTime.minute),
+                time: DateTime(selectedDate.year, selectedDate.month,
+                    selectedDate.day, selectedTime.hour, selectedTime.minute),
                 iconType: categoryList[selectedCategory],
                 iconColor: colorList[selectedCategory],
               );
@@ -409,7 +432,9 @@ class _SecondRouteState extends State<SecondRoute> {
       appBar: AppBar(
         title: Text("Add a Spend"),
       ),
-      body: Form(key: _formKey, child: addSpendDialog()),
+      body: Builder(
+          builder: (context) =>
+              Form(key: _formKey, child: addSpendDialog(context))),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
