@@ -5,14 +5,82 @@ import 'package:percent_indicator/percent_indicator.dart';
 import 'package:walnut_clone/all_spends_screen.dart';
 import './spend.dart';
 
-class AppBarWidget extends StatelessWidget {
+class AppBarWidget extends StatefulWidget {
   final List<Spend> spendsList;
 
   AppBarWidget(this.spendsList);
 
+  @override
+  _AppBarWidgetState createState() => _AppBarWidgetState();
+}
+
+class _AppBarWidgetState extends State<AppBarWidget> {
+  double _currentSliderValue = 0;
+  var overlayOpen = false;
+
+  showOverlay(BuildContext context) async {
+    var slider = Slider(
+      value: _currentSliderValue,
+      min: 0,
+      max: 100,
+      divisions: 5,
+      label: _currentSliderValue.round().toString(),
+      onChanged: (double value) {
+        print(value);
+        print("value");
+        setState(() {
+          _currentSliderValue = value;
+        });
+      },
+    );
+    OverlayState overlayState = Overlay.of(context);
+    OverlayEntry overlayEntry = OverlayEntry(
+        builder: (context) => Positioned(
+          top: MediaQuery.of(context).size.height / 2.0,
+          left: MediaQuery.of(context).size.width / 8.0,
+          width: MediaQuery.of(context).size.width * 0.75,
+          child: Card(
+            color: Colors.pink,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: <Widget>[
+                  Text('select your budget'),
+                  slider,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      RaisedButton(
+                        onPressed: () {
+//                          overlayOpen = false;
+                        print(overlayState);
+                        },
+                        child: Text('Save'),
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+//                          overlayOpen = false;
+                          print(overlayState);
+                        },
+                        child: Text('Close'),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+          ),
+        ));
+    overlayState.insert(overlayEntry);
+//    await Future.delayed(Duration(seconds: 2));
+    if(!overlayOpen) {
+      overlayEntry.remove();
+    }
+  }
+
   getAppBarWidget(BuildContext ctx) {
     var totalAmountSpent = 0.0;
-    this.spendsList.forEach((spend) {
+    this.widget.spendsList.forEach((spend) {
       totalAmountSpent += spend.amount;
     });
     initializeDateFormatting();
@@ -66,7 +134,7 @@ class AppBarWidget extends StatelessWidget {
                         GestureDetector(
                           onTap: () {
                               print("more spends pressed");
-                              Navigator.of(ctx).pushNamed(AllSpendsScreen.routeName, arguments: this.spendsList);
+                              Navigator.of(ctx).pushNamed(AllSpendsScreen.routeName, arguments: this.widget.spendsList);
                             },
                           child: Row(
                             children: <Widget>[
@@ -75,13 +143,21 @@ class AppBarWidget extends StatelessWidget {
                             ],
                           ),
                         ),
-                        new LinearPercentIndicator(
-                          width: 140.0,
-                          lineHeight: 14.0,
-                          percent: 0.5,
-                          backgroundColor: Colors.white,
-                          progressColor: Colors.lightBlueAccent,
-                          trailing: Text("90.0%"),
+                        GestureDetector(
+                          onTap: () {
+                              showOverlay(ctx);
+                              setState(() {
+                                overlayOpen = true;
+                              });
+                          },
+                          child: new LinearPercentIndicator(
+                            width: 140.0,
+                            lineHeight: 14.0,
+                            percent: 0.5,
+                            backgroundColor: Colors.white,
+                            progressColor: Colors.lightBlueAccent,
+                            trailing: Text("90.0%"),
+                          ),
                         ),
                         Text('Safe to spend some amount'),
                       ],
@@ -99,7 +175,7 @@ class AppBarWidget extends StatelessWidget {
                             icon: Icon(Icons.pie_chart),
                             tooltip: 'Increase volume by 10',
                             onPressed: () {
-                              Navigator.of(ctx).pushNamed(AllSpendsScreen.routeName, arguments: this.spendsList);
+                              Navigator.of(ctx).pushNamed(AllSpendsScreen.routeName, arguments: this.widget.spendsList);
                             },
                           )
                       ),
@@ -112,6 +188,7 @@ class AppBarWidget extends StatelessWidget {
         ),
       );
   }
+
   @override
   Widget build(BuildContext context) {
     return getAppBarWidget(context);
