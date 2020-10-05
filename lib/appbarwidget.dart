@@ -11,6 +11,10 @@ class AppBarWidget extends StatelessWidget {
   AppBarWidget(this.spendsList);
 
   getAppBarWidget(BuildContext ctx) {
+    var totalAmountSpent = 0.0;
+    this.spendsList.forEach((spend) {
+      totalAmountSpent += spend.amount;
+    });
     initializeDateFormatting();
     DateTime now = new DateTime.now();
     var formatter = new DateFormat("MMMM", 'en');
@@ -62,7 +66,7 @@ class AppBarWidget extends StatelessWidget {
                         Row(
                           children: <Widget>[
                             Text('₹'),
-                            Text('4056', style: TextStyle(fontSize: 40)),
+                            Text(totalAmountSpent.toString(), style: TextStyle(fontSize: 40)),
                           ],
                         ),
                         new LinearPercentIndicator(
