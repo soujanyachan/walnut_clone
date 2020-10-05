@@ -12,6 +12,7 @@ Color iconColor;
 List<String> tags;
 String photo;
 IconData iconType;
+String id;
 
 Spend({
   @required this.amount,
@@ -24,7 +25,8 @@ Spend({
   this.iconColor,
   this.note,
   this.tags,
-  this.photo
+  this.photo,
+  this.id
 }) {
   if(this.time == null) {
     this.time = DateTime.now();
@@ -44,6 +46,7 @@ Map<String, dynamic> toMap() {
   map['tags'] = tags.toString();
   map['photo'] = photo;
   map['iconColor'] = iconColor.toString();
+  map['id'] = id.toString();
   print(map);
   return map;
 }
