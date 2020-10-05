@@ -63,11 +63,17 @@ class AppBarWidget extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Text('₹'),
-                            Text(totalAmountSpent.toString(), style: TextStyle(fontSize: 40)),
-                          ],
+                        GestureDetector(
+                          onTap: () {
+                              print("more spends pressed");
+                              Navigator.of(ctx).pushNamed(AllSpendsScreen.routeName, arguments: this.spendsList);
+                            },
+                          child: Row(
+                            children: <Widget>[
+                              Text('₹'),
+                              Text(totalAmountSpent.toString(), style: TextStyle(fontSize: 40)),
+                            ],
+                          ),
                         ),
                         new LinearPercentIndicator(
                           width: 140.0,
