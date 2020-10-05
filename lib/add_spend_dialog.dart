@@ -82,12 +82,16 @@ class _SecondRouteState extends State<SecondRoute> {
   }
 
   bool isNotFutureTime(TimeOfDay pickedTime) {
-    final maxTime = TimeOfDay.now();
-    if (pickedTime.hour <= maxTime.hour &&
-        pickedTime.minute <= maxTime.minute) {
-      return true;
+    if (maxDate.difference(selectedDate).inDays == 0) {
+      final maxTime = TimeOfDay.now();
+      if (pickedTime.hour <= maxTime.hour &&
+          pickedTime.minute <= maxTime.minute) {
+        return true;
+      } else {
+        return false;
+      }
     }
-    return false;
+    return true;
   }
 
   Future<Null> _selectTime(BuildContext context) async {
@@ -99,7 +103,9 @@ class _SecondRouteState extends State<SecondRoute> {
           selectedTime = picked;
         });
       } else {
-        selectedTime = TimeOfDay.now();
+        setState(() {
+          selectedTime = TimeOfDay.now();
+        });
         Scaffold.of(context)
           ..removeCurrentSnackBar()
           ..showSnackBar(
@@ -108,6 +114,7 @@ class _SecondRouteState extends State<SecondRoute> {
                 'Time cannot be greater than current time (${selectedTime.format(context)})',
                 style: TextStyle(color: Colors.amber),
               ),
+              duration: Duration(seconds: 2),
             ),
           );
       }
@@ -121,10 +128,10 @@ class _SecondRouteState extends State<SecondRoute> {
         firstDate: DateTime(2015, 8),
         lastDate: maxDate);
     if (picked != null) {
-      await _selectTime(context);
       setState(() {
         selectedDate = picked;
       });
+      await _selectTime(context);
     }
     Scaffold.of(context)
       ..showSnackBar(
