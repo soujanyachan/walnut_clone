@@ -18,7 +18,9 @@ class _SecondRouteState extends State<SecondRoute> {
   var _spendReason, _spendAmount, _spendNote;
 
   DateTime selectedDate = DateTime.now();
+  final maxDate = DateTime.now();
   TimeOfDay selectedTime = TimeOfDay.now();
+
   var newFormat = DateFormat("MMM dd, HH:mm a");
   var formatTime = DateFormat("HH:mm a");
   var isExpense = false;
@@ -79,12 +81,44 @@ class _SecondRouteState extends State<SecondRoute> {
     await db.getSpend();
   }
 
+  bool isNotFutureTime(TimeOfDay pickedTime) {
+    if (maxDate.difference(selectedDate).inDays == 0) {
+      final maxTime = TimeOfDay.now();
+      if (pickedTime.hour <= maxTime.hour &&
+          pickedTime.minute <= maxTime.minute) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+    return true;
+  }
+
   Future<Null> _selectTime(BuildContext context) async {
     final picked =
-    await showTimePicker(context: context, initialTime: selectedTime);
-    setState(() {
-      selectedTime = picked;
-    });
+        await showTimePicker(context: context, initialTime: selectedTime);
+    if (picked != null && picked != selectedTime) {
+      if (isNotFutureTime(picked)) {
+        setState(() {
+          selectedTime = picked;
+        });
+      } else {
+        setState(() {
+          selectedTime = TimeOfDay.now();
+        });
+        Scaffold.of(context)
+          ..removeCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(
+                'Time cannot be greater than current time (${selectedTime.format(context)})',
+                style: TextStyle(color: Colors.amber),
+              ),
+              duration: Duration(seconds: 2),
+            ),
+          );
+      }
+    }
   }
 
   Future<Null> _selectDate(BuildContext context) async {
@@ -92,13 +126,22 @@ class _SecondRouteState extends State<SecondRoute> {
         context: context,
         initialDate: selectedDate,
         firstDate: DateTime(2015, 8),
-        lastDate: DateTime(2101));
-    if (picked != null && picked != selectedDate) {
-      await _selectTime(context);
+        lastDate: maxDate);
+    if (picked != null) {
       setState(() {
         selectedDate = picked;
       });
+      await _selectTime(context);
     }
+    Scaffold.of(context)
+      ..showSnackBar(
+        SnackBar(
+          content: Text(
+            'Selected Date & Time: ${newFormat.format(DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedTime.hour, selectedTime.minute))}',
+            style: TextStyle(color: Colors.amber),
+          ),
+        ),
+      );
   }
 
   displayCategories(categoryList) {
@@ -192,7 +235,7 @@ class _SecondRouteState extends State<SecondRoute> {
     return fullRowList;
   }
 
-  addSpendDialog() {
+  addSpendDialog(BuildContext context) {
     var inputSpendDataList = <Widget>[
       ListTile(
         dense: true,
@@ -385,7 +428,8 @@ class _SecondRouteState extends State<SecondRoute> {
                 category: selectedCategory,
                 tags: selectedTags,
                 note: _spendNote,
-                time: DateTime(selectedDate.year, selectedDate.month, selectedDate.day, selectedTime.hour, selectedTime.minute),
+                time: DateTime(selectedDate.year, selectedDate.month,
+                    selectedDate.day, selectedTime.hour, selectedTime.minute),
                 iconType: categoryList[selectedCategory],
                 iconColor: colorList[selectedCategory],
               );
@@ -409,7 +453,9 @@ class _SecondRouteState extends State<SecondRoute> {
       appBar: AppBar(
         title: Text("Add a Spend"),
       ),
-      body: Form(key: _formKey, child: addSpendDialog()),
+      body: Builder(
+          builder: (context) =>
+              Form(key: _formKey, child: addSpendDialog(context))),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
