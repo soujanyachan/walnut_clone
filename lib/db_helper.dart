@@ -38,7 +38,6 @@ var colorList = {
   "Other": Colors.teal
 };
 
-
 class DatabaseHelper {
   static final DatabaseHelper _instance = new DatabaseHelper.internal();
   factory DatabaseHelper() => _instance;
@@ -67,7 +66,8 @@ class DatabaseHelper {
 
   Future<int> saveSpend(Spend spend) async {
     var dbClient = await db;
-    int res = await dbClient.insert("Spend", spend.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    int res = await dbClient.insert("Spend", spend.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
     print("res.toString()");
     print(res.toString());
     return res;
@@ -75,8 +75,7 @@ class DatabaseHelper {
 
   void dropSpendTable() async {
     var dbClient = await db;
-    await dbClient.execute(
-        "DROP TABLE [IF EXISTS] Spend");
+    await dbClient.execute("DROP TABLE [IF EXISTS] Spend");
   }
 
   Future<List<Spend>> getSpend() async {
@@ -95,10 +94,10 @@ class DatabaseHelper {
           iconColor: colorList[list[i]["category"]],
           note: list[i]["note"],
           tags: (jsonDecode(list[i]["tags"]) as List<dynamic>).cast<String>(),
-          photo: list[i]["photo"]
-      );
+          photo: list[i]["photo"]);
       spends.add(spend);
     }
+    spends.sort((a, b) => b.time.compareTo(a.time));
 //    print("in get spend db helper");
 //    print(spends.toString());
     return spends;
