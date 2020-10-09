@@ -36,7 +36,7 @@ dev_dependencies:
   path: ^1.6.4
   path_provider: ^1.6.10
   image_picker: ^0.6.7+1
-
+  flutter_xlider: ^3.4.0
 
 
 # For information on the generic Dart part of this file, see the

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:walnut_clone/all_spends_screen.dart';
+import 'package:flutter_xlider/flutter_xlider.dart';
 import './spend.dart';
 
 class AppBarWidget extends StatefulWidget {
@@ -16,67 +17,110 @@ class AppBarWidget extends StatefulWidget {
 
 class _AppBarWidgetState extends State<AppBarWidget> {
   double _currentSliderValue = 0;
-  var overlayOpen = false;
+  double _lowerValue = 50;
+  double _upperValue = 180;
 
-  showOverlay(BuildContext context) async {
-    var slider = Slider(
-      value: _currentSliderValue,
-      min: 0,
-      max: 100,
-      divisions: 5,
-      label: _currentSliderValue.round().toString(),
-      onChanged: (double value) {
-        print(value);
-        print("value");
-        setState(() {
-          _currentSliderValue = value;
-        });
+  showAlertDialog(BuildContext context) {
+
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Cancel"),
+      onPressed:  () {},
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Continue"),
+      onPressed:  () {},
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("AlertDialog"),
+      content: Text("Would you like to continue learning how to use Flutter alerts?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
       },
     );
-    OverlayState overlayState = Overlay.of(context);
-    OverlayEntry overlayEntry = OverlayEntry(
-        builder: (context) => Positioned(
-          top: MediaQuery.of(context).size.height / 2.0,
-          left: MediaQuery.of(context).size.width / 8.0,
-          width: MediaQuery.of(context).size.width * 0.75,
-          child: Card(
-            color: Colors.pink,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: <Widget>[
-                  Text('select your budget'),
-                  slider,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      RaisedButton(
-                        onPressed: () {
-//                          overlayOpen = false;
-                        print(overlayState);
-                        },
-                        child: Text('Save'),
-                      ),
-                      RaisedButton(
-                        onPressed: () {
-//                          overlayOpen = false;
-                          print(overlayState);
-                        },
-                        child: Text('Close'),
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ),
-          ),
-        ));
-    overlayState.insert(overlayEntry);
-//    await Future.delayed(Duration(seconds: 2));
-    if(!overlayOpen) {
-      overlayEntry.remove();
-    }
   }
+
+//  showOverlay(BuildContext context) async {
+//    OverlayState overlayState = Overlay.of(context);
+//    OverlayEntry overlayEntry;
+//    overlayEntry = OverlayEntry(
+//        builder: (context) => Positioned(
+//          top: MediaQuery.of(context).size.height / 3.0,
+//          left: MediaQuery.of(context).size.width / 8.0,
+//          width: MediaQuery.of(context).size.width * 0.75,
+//          child: Card(
+//            color: Colors.pink,
+//            child:
+//            Padding(
+//              padding: const EdgeInsets.all(8.0),
+//              child: Column(
+//                children: <Widget>[
+//                  Text('select your budget'),
+//                  Row(
+//                    children: <Widget>[
+//                      Text('Budget value'),
+//                      Container(
+//                        width: 100,
+//                        child: TextFormField(
+//                          decoration: InputDecoration(
+//                              border: InputBorder.none, hintText: 'Budget value'),
+//                          onSaved: (value) {
+//                            print(value);
+//                          },
+//                        ),
+//                      ),
+//                    ],
+//                  ),
+//                  Slider(
+//                    value: _currentSliderValue.toDouble(),
+//                    min: 0,
+//                    max: 200000,
+//                    divisions: 10,
+//                    label: _currentSliderValue.round().toString(),
+//                    onChanged: (double value) {
+//                      setState(() {
+//                        _currentSliderValue = value;
+//                        overlayEntry.markNeedsBuild();
+//                      });
+//                    },
+//                  ),
+//                  Row(
+//                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+//                    children: <Widget>[
+//                      RaisedButton(
+//                        onPressed: () {
+//                          print('removing overlay entry 1');
+//                          overlayEntry.remove();
+//                        },
+//                        child: Text('Save'),
+//                      ),
+//                      RaisedButton(
+//                        onPressed: () {
+//                          print('removing overlay entry 2');
+//                          overlayEntry.remove();
+//                        },
+//                        child: Text('Close'),
+//                      )
+//                    ],
+//                  )
+//                ],
+//              ),
+//            ),
+//          ),
+//        ));
+//    overlayState.insert(overlayEntry);
+//  }
 
   getAppBarWidget(BuildContext ctx) {
     var totalAmountSpent = 0.0;
@@ -145,10 +189,8 @@ class _AppBarWidgetState extends State<AppBarWidget> {
                         ),
                         GestureDetector(
                           onTap: () {
-                              showOverlay(ctx);
-                              setState(() {
-                                overlayOpen = true;
-                              });
+//                            showOverlay(ctx);
+                            showAlertDialog(ctx);
                           },
                           child: new LinearPercentIndicator(
                             width: 140.0,
@@ -192,5 +234,20 @@ class _AppBarWidgetState extends State<AppBarWidget> {
   @override
   Widget build(BuildContext context) {
     return getAppBarWidget(context);
+//  return Slider(
+//    value: _currentSliderValue.toDouble(),
+//    min: 0,
+//    max: 100,
+//    divisions: 5,
+//    label: _currentSliderValue.round().toString(),
+//    onChanged: (double value) {
+//      print(value.runtimeType);
+//      print(value);
+//      print("value");
+//      setState(() {
+//        _currentSliderValue = value;
+//      });
+//    },
+//  );
   }
 }
